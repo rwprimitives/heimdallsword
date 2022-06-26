@@ -1,0 +1,5 @@
+subject=Bad Key
+content_type=plain
+body=
+
+This key has not been defined in the recipient file ${INVALID_KEY}

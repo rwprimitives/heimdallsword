@@ -1,0 +1,4 @@
+sender_one@livecorp.xyz, qwertyuiop
+sender_two@gmail.com, password123, smtp_url=smtp.gmail.com, pop3_url=pop.gmail.com
+sender_three@outlook.com, !@#$%^&*, smtp_url=smtp-mail.outlook.com, pop3_url=pop-mail.outlook.com
+sender_four@yahoo.com, trustno1, smtp_url=smtp.mail.yahoo.com, pop3_url=pop.mail.yahoo.com

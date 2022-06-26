@@ -1,0 +1,6 @@
+subject=Bad Currency
+content_type=plain
+body=
+
+This is how NOT to display currency: $1.00
+Must use double dollar sign

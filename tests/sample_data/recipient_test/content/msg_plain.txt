@@ -1,0 +1,20 @@
+subject=Motor Vehicle Service Notification
+content_type=plain
+body=
+
+Dear ${EMAIL_USERNAME},
+
+Our records indicate that you have not contacted us to have your vehicle
+protection updated. This notice is to inform you that your ${VEHICLE} 
+is in need of a vehicle protection update in order to ensure its optimal 
+operation. Please call us today at 1-833-201-1643. By neglecting to update
+your protection program you will be responsible for paying all repairs out of
+pocket.
+
+Sincerily,
+HeimdallSword
+
+
+This is supposed to be a very small fine print to state that this email is
+not real.
+This email was sent on ${LOCAL_DATE} at ${LOCAL_TIME}.

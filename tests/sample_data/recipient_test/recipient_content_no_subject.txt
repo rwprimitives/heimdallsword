@@ -1,0 +1,7 @@
+# Keep all lines commented out
+
+#recip1@gmail.com, msg_built_in_tags.txt
+#recip2@outlook.com, msg_plain.txt, VEHICLE=2018 MAZDA CX-5
+#recip3@yahoo.com, msg_plain.txt, VEHICLE=2022 Huracan Evo RWD Spyder
+#recip4@gmail.com, msg_html.txt, GREETING=Morning, CODE=8D34E4, AUTHOR=eldiablo
+#recip5@yahoo.com, msg_html.txt, GREETING=Afternoon, CODE=C9E02B, AUTHOR=HeimdallSword

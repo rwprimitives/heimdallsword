@@ -1,0 +1,28 @@
+subject=Built-in Tags Test
+content_type=plain
+body=
+This is a test email to verify that the built-in tags work.
+
+Built-in tags
+-------------
+
+Recipient Email:           ${EMAIL}
+Recipient Email Username:  ${EMAIL_USERNAME}
+Recipient Email Domain:    ${EMAIL_DOMAIN}
+
+Local Date (Default):      ${LOCAL_DATE}
+Local Date yyyy-mm-dd:     ${LOCAL_DATE=%Y-%m-%d}
+Local Time (Default):      ${LOCAL_TIME}
+Local Time hh:mm:ss am/pm: ${LOCAL_TIME=%H:%M:%S %p}
+Local Date and Time:       ${LOCAL_DATE=%a %d %b %Y %H:%M:%S %p %Z}
+
+UTC Date (Default):        ${UTC_DATE}
+UTC Date yyyy-mm-dd:       ${UTC_DATE=%Y-%m-%d}
+UTC Time (Default):        ${UTC_TIME}
+UTC Time hh:mm:ss am/pm:   ${UTC_TIME=%H:%M:%S %p}
+UTC Date and Time:         ${UTC_DATE=%a %d %b %Y %H:%M:%S %p %Z}
+
+This concludes the built-in tags test.
+
+v/r,
+hHeimsdallsword

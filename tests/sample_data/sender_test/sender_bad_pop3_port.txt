@@ -1,0 +1,1 @@
+sender_one@livecorp.xyz, qwertyuiop, pop3_port=NaN

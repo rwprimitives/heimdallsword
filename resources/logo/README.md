@@ -1,0 +1,1 @@
+The HeimdallSword logo is released under the BSD-3-Clause.

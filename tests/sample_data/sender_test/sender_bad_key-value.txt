@@ -1,0 +1,1 @@
+sender_one@livecorp.xyz, qwertyuiop, smtp_url=smtp.livecorp.xyz, keywithnovalue
