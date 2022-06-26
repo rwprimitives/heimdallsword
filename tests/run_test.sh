@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python3 -m unittest -v test_heimdallsword.py
+/usr/bin/env python3 -m unittest -v test_heimdallsword.py
