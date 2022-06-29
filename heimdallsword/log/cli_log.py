@@ -13,7 +13,6 @@ This module provides a simple way of logging output to the terminal.
 
 # standard modules
 import logging
-from datetime import datetime
 from logging import LogRecord
 from logging import Formatter
 

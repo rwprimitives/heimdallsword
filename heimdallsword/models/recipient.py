@@ -12,9 +12,6 @@ This module contains information about the recipient
 as well as delivery status information.
 """
 
-# internal modules
-from heimdallsword.models.message import Message
-
 
 class DeliveryState:
     """
@@ -83,7 +80,7 @@ class Recipient:
                 f'message_filename={self.message_filename!r}, '
                 f'custom_tags={self.custom_tags!r}, '
                 f'message={self.message!r})'
-               )
+                )
 
 
     def add_custom_tag(self, key, value):
@@ -287,7 +284,7 @@ class Recipient:
         :raises: IOError - tags must be of dictionary type
         """
 
-        if not isintance(tags, dict):
+        if not isinstance(tags, dict):
             raise IOError("tags must be of dictionary type")
 
         self.custom_tags = tags
@@ -295,7 +292,7 @@ class Recipient:
 
     def set_message(self, message):
         """
-        Set a :py:obj:`Message` object based on the content in the 
+        Set a :py:obj:`Message` object based on the content in the
         message file (:py:attr:`Recipient.message_filename`).
 
         :param message: the :py:obj:`Message`

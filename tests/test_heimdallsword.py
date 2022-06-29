@@ -13,7 +13,6 @@ code do not break the functionality of the tool.
 """
 
 # standard modules
-import logging
 import re
 import sys
 import os
@@ -26,13 +25,10 @@ parent = os.path.dirname(current)
 sys.path.append(parent)
 
 # internal modules
-from heimdallsword.utils import parser
-from heimdallsword.data.config import Config
-from heimdallsword.data.metrics import Metrics
-from heimdallsword.models.recipient import Recipient
-from heimdallsword.models.message import Message
-from heimdallsword.release import __package__ as PACKAGE
-from heimdallsword.release import __version__ as VERSION
+from heimdallsword.utils import parser                # noqa: E402
+from heimdallsword.data.config import Config          # noqa: E402
+from heimdallsword.models.recipient import Recipient  # noqa: E402
+from heimdallsword.models.message import Message      # noqa: E402
 
 
 class HeimdallSwordTests(unittest.TestCase):
@@ -47,7 +43,10 @@ class HeimdallSwordTests(unittest.TestCase):
         with self.assertRaises(ValueError) as exception_context:
             parser.get_message(content_dir, recipient)
 
-        e_rx = re.compile(f"Failed to parse '{recipient.get_message_filename()}'\.([^\.]*)\. Use \$\$ to add the \$ symbol")
+        # e_rx = re.compile(f"Failed to parse '{recipient.get_message_filename()}'\.([^\.]*)\.
+        # Use \$\$ to add the \$ symbol")
+        e_rx = re.compile(r'Failed to parse \'%s\'\.([^\.]*)\. Use \$\$ to add the \$ symbol' %
+                          (recipient.get_message_filename()))
         self.assertNotEqual(e_rx.fullmatch(str(exception_context.exception)), None)
 
 
@@ -61,7 +60,11 @@ class HeimdallSwordTests(unittest.TestCase):
         with self.assertRaises(KeyError) as exception_context:
             parser.get_message(content_dir, recipient)
 
-        e_rx = re.compile(f'"Failed to parse \'{recipient.get_message_filename()}\'. The tag \'([^\']*)\' is not defined"')
+        # e_rx = re.compile(f'"Failed to parse \'{recipient.get_message_filename()}\'.
+        # The tag \'([^\']*)\' is not defined"')
+        e_rx = re.compile('"Failed to parse \'%s\'. '
+                          'The tag \'([^\']*)\' is not defined"' %
+                          (recipient.get_message_filename()))
         self.assertNotEqual(e_rx.fullmatch(str(exception_context.exception)), None)
 
 
@@ -90,7 +93,13 @@ class HeimdallSwordTests(unittest.TestCase):
         with self.assertRaises(ValueError) as exception_context:
             parser.get_message(content_dir, recipient)
 
-        e_rx = re.compile(f"Failed to parse '{recipient.get_message_filename()}'. The content type defined '([^']*)' is invalid. Content type can only be one of the following: {Message.PLAIN}, {Message.HTML}")
+        # e_rx = re.compile(f"Failed to parse '{recipient.get_message_filename()}'.
+        # The content type defined '([^']*)' is invalid. Content type can only be
+        # one of the following: {Message.PLAIN}, {Message.HTML}")
+        e_rx = re.compile('Failed to parse \'%s\'. '
+                          'The content type defined \'([^\']*)\' is invalid. '
+                          'Content type can only be one of the following: %s, %s' %
+                          (recipient.get_message_filename(), Message.PLAIN, Message.HTML))
         self.assertNotEqual(e_rx.fullmatch(str(exception_context.exception)), None)
 
 
@@ -137,7 +146,8 @@ class HeimdallSwordTests(unittest.TestCase):
         with self.assertRaises(ValueError) as exception_context:
             parser.get_recipients(content_dir, recipient_file)
 
-        e_rx = re.compile(f"Failed to parse '{recipient_file}'. Line #[0-9]+ has an invalid key-value pair '[a-zA-Z0-1]+'")
+        e_rx = re.compile(f"Failed to parse '{recipient_file}'. "
+                          "Line #[0-9]+ has an invalid key-value pair '[a-zA-Z0-1]+'")
         self.assertNotEqual(e_rx.fullmatch(str(exception_context.exception)), None)
 
 
@@ -242,16 +252,6 @@ class HeimdallSwordTests(unittest.TestCase):
         self.assertEqual(str(exception_context.exception),
                          f"Failed to parse '{sender_file}'. No emails were found")
 
-
-
-    # def test_process_all(self):
-    #     self.config = Config()
-    #     self.config.sender_file = "./sample_data/good_sample/senders.txt"
-    #     self.config.recipient_file = "./sample_data/good_sample/recipient.txt"
-    #     self.config.content_dir = "./sample_data/good_sample/content"
-    #     self.config.process_dir = "./sample_data/good_sample"
-
-    #     self.metrics = Metrics(self.config.metrics_file_path)
 
 if __name__ == '__main__':
     unittest.main()

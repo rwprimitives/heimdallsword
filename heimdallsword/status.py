@@ -26,6 +26,8 @@ class ExitCodes(IntEnum):
 
     SERVER_CONNECTION_FAILED    = 4
 
+    GRAPHICAL_PANEL_FAILED      = 5
+
     # Exit codes for data handling
     MISSING_SENDERS_FILE        = 10
     MISSING_RECIPIENTS_FILE     = 11

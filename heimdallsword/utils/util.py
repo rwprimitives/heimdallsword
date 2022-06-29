@@ -31,7 +31,7 @@ def is_directory_valid(arg_parser, dir_path):
     :rtype: bool
     """
     if not os.path.isdir(dir_path):
-        arg_parser.error(f"The directory path provided '{dir_path}' is not valid" )
+        arg_parser.error(f"The directory path provided '{dir_path}' is not valid")
     else:
         return os.path.abspath(dir_path)
 
@@ -49,7 +49,7 @@ def is_file_valid(arg_parser, file):
     :rtype: bool
     """
     if not os.path.isfile(file):
-        arg_parser.error(f"The file provided '{file}' is not valid" )
+        arg_parser.error(f"The file provided '{file}' is not valid")
     else:
         return os.path.abspath(file)
 
@@ -95,7 +95,7 @@ def is_email_valid(email):
         | "One RFC 5322 compliant regex can be found at the top of the page
         | at http://emailregex.com/ but uses the IP address pattern that is
         | floating around the internet with a bug that allows 00 for any of
-        | the unsigned byte decimal values in a dot-delimited address, 
+        | the unsigned byte decimal values in a dot-delimited address,
         | which is illegal."
 
     An additional modification was made to **bortzmeyer**'s modified version
@@ -107,13 +107,13 @@ def is_email_valid(email):
     :returns: True if email is in valid format, False otherwise
     :rtype: bool
     """
-    email_rx = re.compile(r"(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\""  \
-                           "(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b" \
-                           "\x0c\x0e-\x7f])*\")@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9](" \
-                           "?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]" \
-                           "?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-zA-Z0-" \
-                           "9-]*[a-zA-Z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01" \
-                           "-\x09\x0b\x0c\x0e-\x7f])+)\])")
+    email_rx = re.compile(r"(?:[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-zA-Z0-9!#$%&'*+/=?^_`{|}~-]+)*|\""
+                          r"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b"
+                          r"\x0c\x0e-\x7f])*\")@(?:(?:[a-zA-Z0-9](?:[a-zA-Z0-9-]*[a-zA-Z0-9])?\.)+[a-zA-Z0-9]("
+                          r"?:[a-zA-Z0-9-]*[a-zA-Z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]"
+                          r"?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-zA-Z0-"
+                          r"9-]*[a-zA-Z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01"
+                          r"-\x09\x0b\x0c\x0e-\x7f])+)\])")
 
     if not email_rx.match(email):
         return False
@@ -143,7 +143,7 @@ def is_int(number):
     """
 
     try:
-        val = int(number)
+        val = int(number)  # noqa: F841
     except ValueError:
         return False
     else:
@@ -197,18 +197,18 @@ def calculate_elapsed_time(start_time, stop_time, interval="default"):
 
     def days(seconds=None):
         # Seconds in a day is: 24 hours * 60 minutes * 60 seconds
-        return divmod(seconds if seconds != None else elapsed_time_secs, 24 * 60 * 60)
+        return divmod(seconds if seconds is not None else elapsed_time_secs, 24 * 60 * 60)
 
     def hours(seconds=None):
         # Seconds in an hour is: 60 minutes * 60 seconds
-        return divmod(seconds if seconds != None else elapsed_time_secs, 60 * 60)
+        return divmod(seconds if seconds is not None else elapsed_time_secs, 60 * 60)
 
     def minutes(seconds=None):
         # Seconds in a minute is: 60 seconds
-        return divmod(seconds if seconds != None else elapsed_time_secs, 60)
+        return divmod(seconds if seconds is not None else elapsed_time_secs, 60)
 
     def seconds(seconds=None):
-        return divmod(seconds, 1) if seconds != None else elapsed_time_secs
+        return divmod(seconds, 1) if seconds is not None else elapsed_time_secs
 
     def total_time_elapsed():
         # Use remainder of previous calculation to calculate the next value.

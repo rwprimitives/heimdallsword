@@ -33,12 +33,12 @@ class Message:
 
 
     def __repr__(self):
-        return (f'{self.__class__.__name__}' 
+        return (f'{self.__class__.__name__}'
                 f'(subject={self.subject!r}, '
                 # f'attachments={self.attachments!r}, '
                 f'content_type={self.content_type!r}, '
                 f'body={self.body!r})'
-               )
+                )
 
 
     def get_body(self):

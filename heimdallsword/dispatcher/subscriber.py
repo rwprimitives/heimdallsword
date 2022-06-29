@@ -13,8 +13,7 @@ This module is an Observer interface which defines update methods.
 
 # standard modules
 from __future__ import annotations
-from logging import LogRecord
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 
 # internal modules
 from heimdallsword.data.metrics import Metrics

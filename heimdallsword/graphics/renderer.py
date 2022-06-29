@@ -8,18 +8,14 @@
 Renderer Module
 ===============
 
-This module contains a graphics renderer based on :py:mod:curses to 
+This module contains a graphics renderer based on :py:mod:curses to
 display metrics and logging information on the terminal.
 """
 
 # standard modules
 import curses
 import logging
-import sys
-import time
-from curses import panel
-from datetime import datetime
-from logging import LogRecord
+import curses.panel
 
 # internal modules
 from heimdallsword import release
@@ -95,13 +91,18 @@ class CliRenderer(Subscriber):
     def init(self):
         """
         Initialize and display the command line graphical interface.
-        """
 
-        self._render_border()
-        self._render_windows()
-        curses.panel.update_panels()
-        curses.doupdate()
-        self.screen.refresh()
+        :raises: IOError - Not enough space available to render graphics panel
+        """
+        try:
+            self._render_border()
+            self._render_windows()
+            curses.panel.update_panels()
+            curses.doupdate()
+            self.screen.refresh()
+        except Exception:
+            self.terminate()
+            raise IOError("Not enough space available to render graphics panel")
 
 
     def _render_border(self):
@@ -116,7 +117,7 @@ class CliRenderer(Subscriber):
         self.screen.border(0)
         self.screen.addstr(0, 2, title_bar, curses.A_BOLD | curses.A_REVERSE)
         self.screen.addstr(self.max_height - 1, 2, bottom_bar, curses.A_REVERSE)
-        
+
 
     def _render_windows(self):
         """
@@ -142,7 +143,8 @@ class CliRenderer(Subscriber):
         self.data_window.scrollok(True)
         self.data_window_panel = curses.panel.new_panel(self.data_window)
 
-        self.stats_window = curses.newwin(self.STATS_DATA_WINDOW_HEIGHT, (self.max_width // 2) - 4, 4, (self.max_width // 2) + 1)
+        self.stats_window = curses.newwin(self.STATS_DATA_WINDOW_HEIGHT, (self.max_width // 2) - 4, 4,
+                                          (self.max_width // 2) + 1)
         self.stats_window.scrollok(True)
         self.stats_window_panel = curses.panel.new_panel(self.stats_window)
 
@@ -163,7 +165,8 @@ class CliRenderer(Subscriber):
         self.log_window.scrollok(True)
         self.log_window_panel = curses.panel.new_panel(self.log_window)
 
-        self.log_messages_window = self.log_window.derwin(self.max_height - self.LOG_WINDOW_HEIGHT - 2, self.max_width - 6, 1, 1)
+        self.log_messages_window = self.log_window.derwin(self.max_height - self.LOG_WINDOW_HEIGHT - 2,
+                                                          self.max_width - 6, 1, 1)
         self.log_messages_window.scrollok(True)
         self.log_messages_window.idlok(True)
         self.log_messages_window.leaveok(True)
@@ -218,7 +221,7 @@ class CliRenderer(Subscriber):
         metrics_window.resize(self.METRICS_WINDOW_HEIGHT, window_width)
         metrics_window.erase()
         metrics_window.box()
-        metrics_window.addstr(0, 2, f" Metrics: ", curses.A_BOLD)
+        metrics_window.addstr(0, 2, " Metrics: ", curses.A_BOLD)
 
         log_window = self.log_window_panel.window()
         log_window.bkgdset(self.BLUE_ON_BLACK)
@@ -231,7 +234,6 @@ class CliRenderer(Subscriber):
         self.log_messages_window.resize(log_window_height - 2, window_width - 2)
         # self.log_messages_window.erase()
         self.log_messages_window.refresh()
-        
 
         data_window = self.data_window_panel.window()
         data_window.bkgdset(self.WHITE_ON_BLACK)
@@ -275,18 +277,30 @@ class CliRenderer(Subscriber):
         :type: :py:class:`heimdallsword.data.metrics.Metrics`
         """
 
-        self._update_stat_window(self.start_time_window                     , "Start time:                        ", f"{metrics.get_start_time()[1]}")
-        self._update_stat_window(self.stop_time_window                      , "Stop time:                         ", f"{metrics.get_stop_time()[1]}")
-        self._update_stat_window(self.elapsed_time_window                   , "Elapsed time:                      ", f"{metrics.get_elapsed_time()}")
-        self._update_stat_window(self.delivery_rate_window                  , "Delivery rate:                     ", f"{metrics.get_current_delivery_rate()}%")
-        self._update_stat_window(self.fail_rate_window                      , "Failed rate:                       ", f"{metrics.get_current_fail_rate()}%")
-        self._update_stat_window(self.emails_delivered_window               , "Emails delivered:                  ", f"{metrics.get_emails_delivered_count()}")
-        self._update_stat_window(self.emails_not_delivered_window           , "Emails not delivered:              ", f"{metrics.get_emails_not_delivered_count()}")
-        self._update_stat_window(self.emails_failed_delivery_window         , "Emails failed delivery:            ", f"{metrics.get_emails_failed_delivery_count()}")
-        self._update_stat_window(self.recipients_rejected_window            , "Recipients rejected:               ", f"{metrics.get_recipient_rejected_count()}")
-        self._update_stat_window(self.senders_rejected_window               , "Senders rejected:                  ", f"{metrics.get_senders_rejected_count()}")
-        self._update_stat_window(self.emails_failed_delivery_format_window  , "Emails failed delivery format:     ", f"{metrics.get_failed_delivery_format_count()}")
-        self._update_stat_window(self.emails_failed_delivery_disconnect_window , "Emails failed delivery disconnect: ", f"{metrics.get_disconnected_count()}")
+        self._update_stat_window(self.start_time_window,
+                                 "Start time:                        ", f"{metrics.get_start_time()[1]}")
+        self._update_stat_window(self.stop_time_window,
+                                 "Stop time:                         ", f"{metrics.get_stop_time()[1]}")
+        self._update_stat_window(self.elapsed_time_window,
+                                 "Elapsed time:                      ", f"{metrics.get_elapsed_time()}")
+        self._update_stat_window(self.delivery_rate_window,
+                                 "Delivery rate:                     ", f"{metrics.get_current_delivery_rate()}%")
+        self._update_stat_window(self.fail_rate_window,
+                                 "Failed rate:                       ", f"{metrics.get_current_fail_rate()}%")
+        self._update_stat_window(self.emails_delivered_window,
+                                 "Emails delivered:                  ", f"{metrics.get_emails_delivered_count()}")
+        self._update_stat_window(self.emails_not_delivered_window,
+                                 "Emails not delivered:              ", f"{metrics.get_emails_not_delivered_count()}")
+        self._update_stat_window(self.emails_failed_delivery_window,
+                                 "Emails failed delivery:            ", f"{metrics.get_emails_failed_delivery_count()}")
+        self._update_stat_window(self.recipients_rejected_window,
+                                 "Recipients rejected:               ", f"{metrics.get_recipient_rejected_count()}")
+        self._update_stat_window(self.senders_rejected_window,
+                                 "Senders rejected:                  ", f"{metrics.get_senders_rejected_count()}")
+        self._update_stat_window(self.emails_failed_delivery_format_window,
+                                 "Emails failed delivery format:     ", f"{metrics.get_failed_delivery_format_count()}")
+        self._update_stat_window(self.emails_failed_delivery_disconnect_window,
+                                 "Emails failed delivery disconnect: ", f"{metrics.get_disconnected_count()}")
 
 
     def _update_stat_window(self, window, label_text, value):
@@ -328,8 +342,7 @@ class CliRenderer(Subscriber):
         :type: :py:class:`logging.LogRecord`
         """
 
-        if "METRICS" in record.getMessage() or \
-            " -" in record.getMessage():
+        if "METRICS" in record.getMessage() or " -" in record.getMessage():
             return
 
         if record.levelno == logging.ERROR:
@@ -355,7 +368,7 @@ class CliRenderer(Subscriber):
                 self._update_window_sizes()
                 self._render_border()
                 self._update_windows()
-                
+
                 curses.panel.update_panels()
                 curses.doupdate()
                 self.screen.refresh()

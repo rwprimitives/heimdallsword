@@ -141,7 +141,7 @@ class Metrics:
 
         with self._lock:
             if self.num_of_recipients:
-                rate = round( (self.num_of_emails_delivered / self.num_of_recipients) * 100, 1 )
+                rate = round((self.num_of_emails_delivered / self.num_of_recipients) * 100, 1)
             return rate
 
 
@@ -164,11 +164,12 @@ class Metrics:
 
         with self._lock:
             if self.num_of_recipients:
-                rate = round( ((self.num_of_emails_failed_delivery + 
-                                self.num_of_recipients_rejected +
-                                self.num_of_senders_rejected +
-                                self.num_of_emails_disconnected +
-                                self.num_of_emails_failed_delivery_format) / self.num_of_recipients) * 100, 1 )
+                rate = round(((self.num_of_emails_failed_delivery            # noqa: W503
+                               + self.num_of_recipients_rejected             # noqa: W503
+                               + self.num_of_senders_rejected                # noqa: W503
+                               + self.num_of_emails_disconnected             # noqa: W503
+                               + self.num_of_emails_failed_delivery_format)  # noqa: W503
+                              / self.num_of_recipients) * 100, 1)            # noqa: W503
             return rate
 
 
@@ -232,7 +233,6 @@ class Metrics:
         """
 
         formatted_time = "N/A"
-        timestamp = 0
 
         if self.stop_time:
             if dt_format:

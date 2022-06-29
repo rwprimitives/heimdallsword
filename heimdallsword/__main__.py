@@ -14,7 +14,6 @@ tool.
 
 # standard modules
 import argparse
-import curses
 import logging
 import os
 import sys
@@ -62,15 +61,14 @@ class CustomFormatter(argparse.RawTextHelpFormatter):
 
             # if the Optional takes a value, format is:
             #    -s ARGS, --long ARGS
-            # change to 
+            # change to
             #    -s, --long ARGS
             else:
                 default = action.dest.upper()
                 args_string = self._format_args(action, default)
                 for option_string in action.option_strings:
-                    #parts.append('%s %s' % (option_string, args_string))
                     parts.append('%s' % option_string)
-                parts[-1] += ' %s'%args_string
+                parts[-1] += ' %s' % args_string
             return ', '.join(parts)
 
 
@@ -81,19 +79,19 @@ def process_dir(logger, config):
 
     senders_file = os.path.abspath(os.path.join(config.process_dir, config.DEFAULT_SENDERS_FILE))
     if not os.path.isfile(senders_file):
-        logger.error(f"The directory '{config.process_dir}' does not contain a '{senders_file}' file" )
+        logger.error(f"The directory '{config.process_dir}' does not contain a '{senders_file}' file")
         return (None, None)
 
     recipients_file = os.path.abspath(os.path.join(config.process_dir, config.DEFAULT_RECIPIENTS_FILE))
     if not os.path.isfile(recipients_file):
-        logger.error(f"The directory '{config.process_dir}' does not contain a '{recipients_file}' file" )
+        logger.error(f"The directory '{config.process_dir}' does not contain a '{recipients_file}' file")
         return (None, None)
 
     content_dir = os.path.abspath(os.path.join(config.process_dir, config.DEFAULT_CONTENT_DIR))
     if not os.path.isdir(content_dir):
-        logger.error(f"The directory '{config.process_dir}' does not contain a '{content_dir}' directory" )
+        logger.error(f"The directory '{config.process_dir}' does not contain a '{content_dir}' directory")
         return (None, None)
-    
+
     config.senders_file = senders_file
     config.recipients_file = recipients_file
     config.content_dir = content_dir
@@ -151,18 +149,18 @@ def get_banner():
     """
     https://www.asciiart.eu/weapons/swords
     """
-    
-    return("""\
+
+    return(r"""\
                      __ __    _          __     ________                   __
               /\    / // /__ (_)_ _  ___/ /__ _/ / / __/    _____  _______/ /
-             / >>  / _  / -_) /  ' \/ _  / _ `/ / /\ \| |/|/ / _ \/ __/ _  / 
-            /</   /_//_/\__/_/_/_/_/\_,_/\_,_/_/_/___/|__,__/\___/_/  \_,_/  
-<\         /< \   
+             / >>  / _  / -_) /  ' \/ _  / _ `/ / /\ \| |/|/ / _ \/ __/ _  /
+            /</   /_//_/\__/_/_/_/_/\_,_/\_,_/_/_/___/|__,__/\___/_/  \_,_/
+<\         /< \
  |\________){o}|----------------------------------------------------------_
 [////////////{*}:::<==============================================-         >
  |/~~~~~~~~){o}|----------------------------------------------------------~
 </         \< /
-            \<\\
+            \<\
              \ >>
               \/
     """)
@@ -186,19 +184,24 @@ def get_version_info():
     return info
 
 
+def formatter(prog):
+    return CustomFormatter(prog, max_help_position=52)
+
+
 def gen_arg_parser(config):
     #
     # Needed to find a way to add padding between the arguments and the descriptions.
     # Found a neat solution at the link below thanks to 'Giacomo Alzetta'.
     # REF: https://stackoverflow.com/a/52606755
     #
-    formatter = lambda prog: CustomFormatter(prog, max_help_position=52)
+
     arg_parser = argparse.ArgumentParser(formatter_class=formatter,
                                          prog=PACKAGE,
                                          description=DESCRIPTION)
 
     arg_parser.add_argument("-d", "--delay",
-                            help=f"the time in milliseconds between each email sent (default: {config.DEFAULT_DELAY} ms)",
+                            help=f"the time in milliseconds between each email sent "
+                                 f"(default: {config.DEFAULT_DELAY} ms)",
                             dest="delay",
                             type=int,
                             metavar='',
@@ -206,7 +209,7 @@ def gen_arg_parser(config):
                             required=False)
 
     arg_parser.add_argument("-g", "--enable-graphics",
-                            help=f"enables command line graphical interface",
+                            help="enables command line graphical interface",
                             dest="graphics",
                             action="store_true",
                             default=False,
@@ -238,7 +241,8 @@ def gen_arg_parser(config):
                             required=False)
 
     arg_parser.add_argument("-w", "--worker-count",
-                            help=f"the number of worker threads to use for sending emails (default: {config.worker_count})",
+                            help=f"the number of worker threads to use for sending emails "
+                                 f"(default: {config.worker_count})",
                             dest="worker_count",
                             type=int,
                             metavar='',
@@ -313,7 +317,8 @@ def run():
         print(f"{PACKAGE}: error: -t and -c|-r|-s are mutually exclusive")
         status = E.INVALID_PARAMS
 
-    elif not args.process_dir and not args.test_sender_file and not (args.content_dir and args.recipients_file and args.senders_file):
+    elif not args.process_dir and not args.test_sender_file and \
+            not (args.content_dir and args.recipients_file and args.senders_file):
         arg_parser.print_help()
         status = E.INVALID_PARAMS
 
@@ -406,26 +411,32 @@ def run():
                         orchestrator.add_subscriber(cli_renderer)
 
                         # Initialize the renderer graphics
-                        cli_renderer.init()
+                        try:
+                            cli_renderer.init()
 
-                        # Create and start the orchestrator in it's own thread
-                        orchestrator_thread = threading.Thread(target=orchestrator.start,
-                                                               daemon=True)
-                        orchestrator_thread.start()
+                        except Exception as e:
+                            logger.exception(e)
+                            status = E.GRAPHICAL_PANEL_FAILED
 
-                        # Start monitoring for key strokes and terminal resizing in order
-                        # to perform any actions specified by the user or update the graphics
-                        cli_renderer.run()
-                        
-                    else:                
+                        else:
+                            # Create and start the orchestrator in it's own thread
+                            orchestrator_thread = threading.Thread(target=orchestrator.start,
+                                                                   daemon=True)
+                            orchestrator_thread.start()
+
+                            # Start monitoring for key strokes and terminal resizing in order
+                            # to perform any actions specified by the user or update the graphics
+                            cli_renderer.run()
+
+                    else:
                         # Start the operation for sending emails. Program will hang here
                         # until all the emails are sent
                         orchestrator.set_logger(logger)
                         orchestrator.start()
 
-
-                    logger.info(f"Saving metrics to '{config.metrics_file_path}'")
-                    metrics.save_metrics()
+                    if status == E.SUCCESS:
+                        logger.info(f"Saving metrics to '{config.metrics_file_path}'")
+                        metrics.save_metrics()
 
                     logger.info("Program terminated")
             else:

@@ -15,7 +15,6 @@ and the email templates.
 # standard modules
 import os
 import re
-import sys
 import time
 from string import Template
 
@@ -58,7 +57,7 @@ def _get_body(key, data):
 def get_message(content_dir, recipient):
     """
     Constructs a :py:class:`heimdallsword.models.message.Message` object based
-    on a given :py:class:`heimdallsword.models.recipient.Recipient` and the 
+    on a given :py:class:`heimdallsword.models.recipient.Recipient` and the
     path of the message file.
 
     :param content_dir: the directory path where the message file resides
@@ -72,10 +71,15 @@ def get_message(content_dir, recipient):
 
     :raises: IOError - No recipient was provided
     :raises: FileNotFoundError - Message file '{message_file_path}' was not found
-    :raises: ValueError - Failed to parse '{recipient.get_message_filename()}. No subject was provided
-    :raises: ValueError - Failed to parse '{recipient.get_message_filename()}'. The content type defined '{content_type}' is invalid. Content type can only be one of the following: {Message.PLAIN}, {Message.HTML}
-    :raises: KeyError - Failed to parse '{recipient.get_message_filename()}'. The tag {e} is not defined
-    :raises: ValueError - Failed to parse '{recipient.get_message_filename()}'. {e}. Use $$ to add the $ symbol
+    :raises: ValueError - Failed to parse '{recipient.get_message_filename()}.
+                          No subject was provided
+    :raises: ValueError - Failed to parse '{recipient.get_message_filename()}'.
+                          The content type defined '{content_type}' is invalid.
+                          Content type can only be one of the following: {Message.PLAIN}, {Message.HTML}
+    :raises: KeyError - Failed to parse '{recipient.get_message_filename()}'.
+                        The tag {e} is not defined
+    :raises: ValueError - Failed to parse '{recipient.get_message_filename()}'.
+                          {e}. Use $$ to add the $ symbol
     """
 
     subject = ""
@@ -116,7 +120,9 @@ def get_message(content_dir, recipient):
 
     # Make sure content type is valid
     if content_type != Message.PLAIN and content_type != Message.HTML:
-        raise ValueError(f"Failed to parse '{recipient.get_message_filename()}'. The content type defined '{content_type}' is invalid. Content type can only be one of the following: {Message.PLAIN}, {Message.HTML}")
+        raise ValueError(f"Failed to parse '{recipient.get_message_filename()}'. "
+                         f"The content type defined '{content_type}' is invalid. "
+                         f"Content type can only be one of the following: {Message.PLAIN}, {Message.HTML}")
 
     # Create a dictionary of supported tags if the template references them
     tag_dict["EMAIL"] = recipient.get_email()
@@ -124,10 +130,10 @@ def get_message(content_dir, recipient):
     tag_dict["EMAIL_DOMAIN"] = recipient.get_email_domain()
 
     # Find supported tags with custom definitions
-    local_date_tags = re.findall("\$\{LOCAL_DATE.*?\}", raw_body, re.MULTILINE)
-    local_time_tags = re.findall("\$\{LOCAL_TIME.*?\}", raw_body, re.MULTILINE)
-    utc_date_tags = re.findall("\$\{UTC_DATE.*?\}", raw_body, re.MULTILINE)
-    utc_time_tags = re.findall("\$\{UTC_TIME.*?\}", raw_body, re.MULTILINE)
+    local_date_tags = re.findall(r"\$\{LOCAL_DATE.*?\}", raw_body, re.MULTILINE)
+    local_time_tags = re.findall(r"\$\{LOCAL_TIME.*?\}", raw_body, re.MULTILINE)
+    utc_date_tags = re.findall(r"\$\{UTC_DATE.*?\}", raw_body, re.MULTILINE)
+    utc_time_tags = re.findall(r"\$\{UTC_TIME.*?\}", raw_body, re.MULTILINE)
 
     timestamp = time.time()
 
@@ -235,7 +241,7 @@ def get_recipients(content_dir, recipients_file):
     Key-values pairs can be appended after the message file and must be comma separated.
     Any key-value pairs appended requires that the key be in the message template,
     otherwise it will be ignored.
-    
+
     For example:
 
         recipient1@example.com, msg1.txt, fname=John, lname=Smith
@@ -256,12 +262,18 @@ def get_recipients(content_dir, recipients_file):
 
     :raises: NotADirectoryError - The content directory '{content_dir}' was not found
     :raises: FileNotFoundError - Recipients file '{recipients_file}' was not found
-    :raises: ValueError - Failed to parse '{recipients_file}'. The '{recipients_file}' is empty
-    :raises: ValueError - Failed to parse '{recipients_file}'. Line #{line_counter} contains an invalid email address
-    :raises: FileNotFoundError - Failed to parse '{recipients_file}'. Line #{line_counter} does not contain a valid message file '{message_file}'
-    :raises: ValueError - Failed to parse '{recipients_file}'. Line #{line_counter} has an invalid key-value pair '{kv_pair.strip()}'
-    :raises: ValueError - Failed to parse '{recipients_file}'. Line #{line_counter} is not in the correct format
-    :raises: ValueError - Failed to parse '{recipients_file}'. No emails were found
+    :raises: ValueError - Failed to parse '{recipients_file}'.
+                          The '{recipients_file}' is empty
+    :raises: ValueError - Failed to parse '{recipients_file}'.
+                          Line #{line_counter} contains an invalid email address
+    :raises: FileNotFoundError - Failed to parse '{recipients_file}'.
+                                 Line #{line_counter} does not contain a valid message file '{message_file}'
+    :raises: ValueError - Failed to parse '{recipients_file}'.
+                          Line #{line_counter} has an invalid key-value pair '{kv_pair.strip()}'
+    :raises: ValueError - Failed to parse '{recipients_file}'.
+                          Line #{line_counter} is not in the correct format
+    :raises: ValueError - Failed to parse '{recipients_file}'.
+                          No emails were found
     """
 
     recipients = []
@@ -295,10 +307,12 @@ def get_recipients(content_dir, recipients_file):
                 message_file_path = os.path.abspath(os.path.join(content_dir, message_file))
 
                 if not util.is_email_valid(email):
-                    raise ValueError(f"Failed to parse '{recipients_file}'. Line #{line_counter} contains an invalid email address")
+                    raise ValueError(f"Failed to parse '{recipients_file}'. Line #{line_counter} "
+                                     "contains an invalid email address")
 
                 if not os.path.isfile(message_file_path):
-                    raise FileNotFoundError(f"Failed to parse '{recipients_file}'. Line #{line_counter} does not contain a valid message file")
+                    raise FileNotFoundError(f"Failed to parse '{recipients_file}'. Line #{line_counter} "
+                                            "does not contain a valid message file")
 
                 recipient = Recipient()
                 recipient.set_email(email)
@@ -314,15 +328,17 @@ def get_recipients(content_dir, recipients_file):
                             value = kv_pair_split[1].strip()
                             recipient.add_custom_tag(key, value)
                         else:
-                            raise ValueError(f"Failed to parse '{recipients_file}'. Line #{line_counter} has an invalid key-value pair '{kv_pair.strip()}'")
-                        
+                            raise ValueError(f"Failed to parse '{recipients_file}'. Line #{line_counter} "
+                                             f"has an invalid key-value pair '{kv_pair.strip()}'")
+
                 # parse the message file
                 recipient.set_message(get_message(content_dir, recipient))
                 recipients.append(recipient)
             else:
-                raise ValueError(f"Failed to parse '{recipients_file}'. Line #{line_counter} is not in the correct format")
+                raise ValueError(f"Failed to parse '{recipients_file}'. Line #{line_counter} "
+                                 "is not in the correct format")
 
-            line_counter+=1
+            line_counter += 1
 
     if not len(recipients):
         raise ValueError(f"Failed to parse '{recipients_file}'. No emails were found")
@@ -341,14 +357,15 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
     Each line should be constructed in the following format:
 
         email address, password, smtp_url=, smtp_port=, pop3_url, pop3_port=
-    
+
     For example:
 
         sender1@example.com, secretpassword!
 
         sender2@example.com, P@$$w0rd, smtp_url=smtp.example.com, pop3_url=pop.example.com
-    
-        sender3@example.com, hackyhackhack, smtp_url=smtp.example.com, smtp_port=587, pop3_url=pop.example.com, pop3_port=995
+
+        sender3@example.com, hackyhackhack, smtp_url=smtp.example.com, smtp_port=587,
+        pop3_url=pop.example.com, pop3_port=995
 
     :param senders_file: the file containing one or multiple sender accounts
     :type: str
@@ -361,11 +378,16 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
 
     :raises: FileNotFoundError - Senders file '{senders_file}' was not found
     :raises: ValueError - Failed to parse '{senders_file}'. The '{senders_file}' is empty
-    :raises: ValueError - Failed to parse '{senders_file}'. Line #{line_counter} contains an invalid email address
-    :raises: ValueError - Failed to parse '{senders_file}'. Line #{line_counter} has an invalid key-value pair '{kv_pair.strip()}'
-    :raises: ValueError - Failed to parse '{senders_file}'. Line #{line_counter} has an invalid SMTP port number
-    :raises: ValueError - Failed to parse '{senders_file}'. Line #{line_counter} has an invalid POP3 port number
-    :raises: ValueError - Failed to parse '{senders_file}'. Line #{line_counter} is not in the correct format
+    :raises: ValueError - Failed to parse '{senders_file}'.
+                          Line #{line_counter} contains an invalid email address
+    :raises: ValueError - Failed to parse '{senders_file}'.
+                          Line #{line_counter} has an invalid key-value pair '{kv_pair.strip()}'
+    :raises: ValueError - Failed to parse '{senders_file}'.
+                          Line #{line_counter} has an invalid SMTP port number
+    :raises: ValueError - Failed to parse '{senders_file}'.
+                          Line #{line_counter} has an invalid POP3 port number
+    :raises: ValueError - Failed to parse '{senders_file}'.
+                          Line #{line_counter} is not in the correct format
     :raises: ValueError - Failed to parse '{senders_file}'. No emails were found
     """
 
@@ -398,15 +420,17 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
                 smtp_url = None
                 pop3_url = None
                 other_options = {}
-                
+
                 email = split[0].strip()
                 password = split[1].strip()
 
                 if not util.is_email_valid(email):
-                    raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} contains an invalid email address")
+                    raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} "
+                                     "contains an invalid email address")
 
                 if len(password) == 0:
-                    raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} does not contain a valid password")
+                    raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} "
+                                     "does not contain a valid password")
 
                 # parse any additional options. These should be defined as key-value pairs
                 if len(split) > 2:
@@ -418,7 +442,8 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
                             value = kv_pair_split[1].strip()
                             other_options[key] = value
                         else:
-                            raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} has an invalid key-value pair '{kv_pair.strip()}'")
+                            raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} "
+                                             f"has an invalid key-value pair '{kv_pair.strip()}'")
 
                     if "smtp_url" in other_options:
                         smtp_url = other_options["smtp_url"]
@@ -426,7 +451,8 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
                     if "smtp_port" in other_options:
                         smtp_port = other_options["smtp_port"]
                         if not util.is_int(smtp_port):
-                            raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} has an invalid SMTP port number")
+                            raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} "
+                                             "has an invalid SMTP port number")
 
                     if "pop3_url" in other_options:
                         pop3_url = other_options["pop3_url"]
@@ -434,7 +460,8 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
                     if "pop3_port" in other_options:
                         pop3_port = other_options["pop3_port"]
                         if not util.is_int(pop3_port):
-                            raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} has an invalid POP3 port number")
+                            raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} "
+                                             "has an invalid POP3 port number")
 
                 sender = Sender()
                 sender.set_email(email)
@@ -449,7 +476,7 @@ def get_senders(senders_file, default_smtp_port, default_pop3_port):
             else:
                 raise ValueError(f"Failed to parse '{senders_file}'. Line #{line_counter} is not in the correct format")
 
-            line_counter+=1
+            line_counter += 1
 
     if not len(senders):
         raise ValueError(f"Failed to parse '{senders_file}'. No emails were found")

@@ -45,4 +45,3 @@ class LogHandler(logging.StreamHandler):
 
         if self.callback:
             self.callback(record)
-

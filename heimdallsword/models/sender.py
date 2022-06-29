@@ -57,7 +57,7 @@ class Sender:
                 f'smtp_url={self.smtp_url!r}), '
                 f'pop3_port={self.pop3_port!r}, '
                 f'pop3_url={self.pop3_url!r})'
-               )
+                )
 
     def get_email(self):
         """
@@ -110,7 +110,7 @@ class Sender:
 
     def get_pop3_port(self):
         """
-        Get 
+        Get the port number used to establish a POP3 session.
 
         :returns: the port number used to establish a POP3 session.
         :rtype: int

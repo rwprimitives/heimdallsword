@@ -14,17 +14,13 @@ the status of the emails sent in a multi-threaded fashion
 """
 
 # standard modules
-import logging
 import queue
 import threading
 import time
 
 # internal modules
-from heimdallsword.data.metrics import Metrics
 from heimdallsword.dispatcher.client import EmailClient
 from heimdallsword.models.recipient import DeliveryState
-from heimdallsword.models.recipient import Recipient
-from heimdallsword.models.sender import Sender
 from heimdallsword.utils import util
 
 
@@ -71,7 +67,7 @@ class Orchestrator:
                 else:
                     raise ValueError(f"worker_count must be greater than 0 and less than {util.get_max_thread_count()}")
             else:
-                raise TypeError(f"worker_count argument must be int")
+                raise TypeError("worker_count argument must be int")
 
         self.config = config
         self.metrics = metrics
@@ -272,13 +268,13 @@ class Orchestrator:
 
         self._log_info(f"Spinning of {self.worker_count} workers...")
         for i in range(self.worker_count):
-            worker = threading.Thread(target=self._worker_callack, 
-                                      args=(self.job_queue, self.metrics, i), 
+            worker = threading.Thread(target=self._worker_callack,
+                                      args=(self.job_queue, self.metrics, i),
                                       daemon=True)
             worker.start()
             self.worker_threads[i] = worker
 
-        self._log_info(f"Finished spinning up worker threads")
+        self._log_info("Finished spinning up worker threads")
 
         self._log_info("Setting up email clients per sender")
         email_clients = []
@@ -313,7 +309,7 @@ class Orchestrator:
         self._log_info("Closing all client's SMTP sessions..")
         for client in email_clients:
             client.terminate_session()
-        
+
         self._log_info("Finished closing all client's SMTP sessions")
 
         # NOTE:
@@ -338,20 +334,34 @@ class Orchestrator:
             worker_label = f"[worker={thread_no}] "
 
         self._log_info(f"{worker_label}METRICS:")
-        self._log_info(f"{worker_label} -Total senders                    : {metrics.get_num_of_senders()}")
-        self._log_info(f"{worker_label} -Total recipients                 : {metrics.get_num_of_recipients()}")
-        self._log_info(f"{worker_label} -Start time                       : {metrics.get_start_time()[1]}")
-        self._log_info(f"{worker_label} -Stop time                        : {metrics.get_stop_time()[1]}")
-        self._log_info(f"{worker_label} -Elapsed time                     : {metrics.get_elapsed_time()}")
-        self._log_info(f"{worker_label} -Delivery rate                    : {metrics.get_current_delivery_rate()}%")
-        self._log_info(f"{worker_label} -Bounce rate                      : {metrics.get_current_fail_rate()}%")
-        self._log_info(f"{worker_label} -Emails delivered                 : {metrics.get_emails_delivered_count()}")
-        self._log_info(f"{worker_label} -Emails not delivered             : {metrics.get_emails_not_delivered_count()}")
-        self._log_info(f"{worker_label} -Emails failed delivery           : {metrics.get_emails_failed_delivery_count()}")
-        self._log_info(f"{worker_label} -Recipients rejected              : {metrics.get_recipient_rejected_count()}")
-        self._log_info(f"{worker_label} -Senders rejected                 : {metrics.get_senders_rejected_count()}")
-        self._log_info(f"{worker_label} -Emails failed delivery format    : {metrics.get_failed_delivery_format_count()}")
-        self._log_info(f"{worker_label} -Emails failed delivery disconnect: {metrics.get_disconnected_count()}")
+        self._log_info(f"{worker_label} -Total senders                    : "
+                       f"{metrics.get_num_of_senders()}")
+        self._log_info(f"{worker_label} -Total recipients                 : "
+                       f"{metrics.get_num_of_recipients()}")
+        self._log_info(f"{worker_label} -Start time                       : "
+                       f"{metrics.get_start_time()[1]}")
+        self._log_info(f"{worker_label} -Stop time                        : "
+                       f"{metrics.get_stop_time()[1]}")
+        self._log_info(f"{worker_label} -Elapsed time                     : "
+                       f"{metrics.get_elapsed_time()}")
+        self._log_info(f"{worker_label} -Delivery rate                    : "
+                       f"{metrics.get_current_delivery_rate()}%")
+        self._log_info(f"{worker_label} -Bounce rate                      : "
+                       f"{metrics.get_current_fail_rate()}%")
+        self._log_info(f"{worker_label} -Emails delivered                 : "
+                       f"{metrics.get_emails_delivered_count()}")
+        self._log_info(f"{worker_label} -Emails not delivered             : "
+                       f"{metrics.get_emails_not_delivered_count()}")
+        self._log_info(f"{worker_label} -Emails failed delivery           : "
+                       f"{metrics.get_emails_failed_delivery_count()}")
+        self._log_info(f"{worker_label} -Recipients rejected              : "
+                       f"{metrics.get_recipient_rejected_count()}")
+        self._log_info(f"{worker_label} -Senders rejected                 : "
+                       f"{metrics.get_senders_rejected_count()}")
+        self._log_info(f"{worker_label} -Emails failed delivery format    : "
+                       f"{metrics.get_failed_delivery_format_count()}")
+        self._log_info(f"{worker_label} -Emails failed delivery disconnect: "
+                       f"{metrics.get_disconnected_count()}")
 
 
     def _worker_callack(self, queue, metrics, thread_no):
